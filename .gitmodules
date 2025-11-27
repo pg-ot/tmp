@@ -1,0 +1,3 @@
+[submodule "src/libiec61850"]
+	path = src/libiec61850
+	url = https://github.com/mz-automation/libiec61850.git
