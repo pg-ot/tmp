@@ -1,0 +1,176 @@
+version: '3.8'
+
+services:
+  # Breaker IED v1 - Vulnerable version with web UI
+  breaker-ied-v1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.breaker-v1
+    ports:
+      - "9001:9000"
+    networks:
+      - mahashakti
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=10M,mode=1777
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+          pids: 100
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    restart: unless-stopped
+    container_name: substation-breaker-v1
+
+  # Breaker IED v2 - Secure version with web UI
+  breaker-ied-v2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.breaker-v2
+    ports:
+      - "9002:9000"
+    networks:
+      - mahashakti
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=10M,mode=1777
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+          pids: 100
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    restart: unless-stopped
+    container_name: substation-breaker-v2
+
+  # Control IED - Sends GOOSE messages
+  control-ied:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ied-simulator
+    command: ["./control_ied"]
+    networks:
+      - mahashakti
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=10M,mode=1777
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+          pids: 50
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    restart: unless-stopped
+    container_name: substation-control-ied
+
+  # Kali-based participant workstation
+  kali-workstation:
+    image: kalilinux/kali-rolling:latest
+    command: tail -f /dev/null
+    # SSH disabled for OVA - use 'docker exec -it kali-workstation bash'
+    # ports:
+    #   - "2222:22"
+    networks:
+      - mahashakti
+      - aushadi_raksha
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+          pids: 200
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    restart: unless-stopped
+    container_name: kali-workstation
+
+  # OpenPLC Runtime
+  openplc:
+    image: pavi0204/openplc-with-message:latest
+    container_name: openplc
+    privileged: true
+    ports:
+      - "8081:8080"
+      - "502:502"
+    networks:
+      - aushadi_raksha
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+          pids: 100
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+  # ScadaBR SCADA System
+  scadabr:
+    image: pavi0204/scadabr-with-message:latest
+    container_name: scadabr
+    privileged: true
+    ports:
+      - "8080:8080"
+    networks:
+      - aushadi_raksha
+    depends_on:
+      - openplc
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+          pids: 100
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+networks:
+  mahashakti:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
+  
+  aushadi_raksha:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.200.0/24
+          gateway: 192.168.200.1

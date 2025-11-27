@@ -1,0 +1,42 @@
+FROM ubuntu:20.04
+
+# Set timezone to avoid interactive prompt
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    libpcap-dev \
+    tcpdump \
+    net-tools \
+    iputils-ping \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy libiec61850 library
+COPY src/libiec61850 ./libiec61850
+
+# Build the library
+RUN cd libiec61850 && make
+
+# Copy IED source files
+COPY src/breaker_ied_v1.c .
+COPY src/flag_server_v1.py .
+COPY src/Makefile .
+
+# Build the IED
+RUN make breaker_ied_v1
+
+# Create status directory
+RUN mkdir -p /tmp
+
+# Copy and set permissions for start script
+COPY docker/start-breaker-v1.sh ./start.sh
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]

@@ -1,0 +1,39 @@
+FROM ubuntu:20.04
+
+# Set timezone to avoid interactive prompt
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    libpcap-dev \
+    tcpdump \
+    net-tools \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy libiec61850 library
+COPY src/libiec61850 ./libiec61850
+
+# Build the library
+RUN cd libiec61850 && make
+
+# Copy IED source files
+COPY src/breaker_ied_v1.c .
+COPY src/breaker_ied_v2.c .
+COPY src/control_ied.c .
+COPY src/Makefile .
+
+# Build the IEDs
+RUN make
+
+# Create status directory
+RUN mkdir -p /tmp
+
+# Default command (can be overridden)
+CMD ["./breaker_ied"]
