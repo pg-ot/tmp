@@ -422,8 +422,16 @@ change_passwords() {
     
     if [ -f "$SCRIPT_DIR/change-team-passwords.sh" ]; then
         bash "$SCRIPT_DIR/change-team-passwords.sh"
+    elif [ -f "event-management/change-team-passwords.sh" ]; then
+        bash "event-management/change-team-passwords.sh"
+    elif [ -f "../event-management/change-team-passwords.sh" ]; then
+        bash "../event-management/change-team-passwords.sh"
     else
         echo -e "${RED}✗ change-team-passwords.sh not found${NC}"
+        echo "Searched in:"
+        echo "  $SCRIPT_DIR/change-team-passwords.sh"
+        echo "  event-management/change-team-passwords.sh"
+        echo "  ../event-management/change-team-passwords.sh"
     fi
     
     read -p "Press Enter to continue..."
