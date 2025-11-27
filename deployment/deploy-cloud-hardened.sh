@@ -67,8 +67,11 @@ for i in $(seq 1 $NUM_TEAMS); do
         --network team${i}_mahashakti \
         --ip 192.168.${MAHASHAKTI_SUBNET}.4 \
         -p ${BREAKER_V1_PORT}:9000 \
+        --cap-add NET_RAW \
+        --cap-add NET_ADMIN \
         --restart unless-stopped \
-        pavi0204/breaker-ied-v1:golden
+        pavi0204/breaker-ied-v1:golden \
+        ./start.sh
     
     # Deploy breaker-ied-v2
     docker run -d \
@@ -76,16 +79,22 @@ for i in $(seq 1 $NUM_TEAMS); do
         --network team${i}_mahashakti \
         --ip 192.168.${MAHASHAKTI_SUBNET}.2 \
         -p ${BREAKER_V2_PORT}:9000 \
+        --cap-add NET_RAW \
+        --cap-add NET_ADMIN \
         --restart unless-stopped \
-        pavi0204/breaker-ied-v2:golden
+        pavi0204/breaker-ied-v2:golden \
+        ./start.sh
     
     # Deploy control-ied
     docker run -d \
         --name team${i}-control-ied \
         --network team${i}_mahashakti \
         --ip 192.168.${MAHASHAKTI_SUBNET}.3 \
+        --cap-add NET_RAW \
+        --cap-add NET_ADMIN \
         --restart unless-stopped \
-        pavi0204/control-ied:golden
+        pavi0204/control-ied:golden \
+        ./control_ied
     
     # Deploy OpenPLC
     docker run -d \
