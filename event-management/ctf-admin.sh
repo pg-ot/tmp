@@ -838,11 +838,17 @@ team_access() {
             continue
         fi
         
-        # Get password from credentials file or use default
+        # Get password - check if container is newer than credentials file
         PASSWORD="IEC61850_CTF_2024"
         if [ -n "$CREDS_FILE" ]; then
-            PASSWORD=$(grep -A 3 "^Team: $TEAM_ID" "$CREDS_FILE" | grep "^Password:" | awk '{print $2}')
-            [ -z "$PASSWORD" ] && PASSWORD="IEC61850_CTF_2024"
+            CONTAINER_CREATED=$(docker inspect -f '{{.Created}}' ${TEAM_ID}-kali 2>/dev/null | date -d "$(cat -)" +%s 2>/dev/null || echo 0)
+            CREDS_MODIFIED=$(stat -c %Y "$CREDS_FILE" 2>/dev/null || echo 0)
+            
+            # Only use credentials file if it's newer than container
+            if [ $CREDS_MODIFIED -gt $CONTAINER_CREATED ]; then
+                PASSWORD=$(grep -A 3 "^Team: $TEAM_ID" "$CREDS_FILE" | grep "^Password:" | awk '{print $2}')
+                [ -z "$PASSWORD" ] && PASSWORD="IEC61850_CTF_2024"
+            fi
         fi
         
         echo -e "${GREEN}Team $i:${NC}"
