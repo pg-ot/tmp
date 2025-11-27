@@ -50,8 +50,8 @@ VM IP: $VM_IP
 EOF
 
 for i in $(seq 1 $TEAM_COUNT); do
-    TEAM_ID=$(printf "team%03d" $i)
-    SSH_PORT=$((20000 + i))
+    TEAM_ID="team${i}"
+    SSH_PORT=$((2200 + i))
     
     # Check if Kali container exists
     if ! docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then

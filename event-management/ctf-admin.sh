@@ -830,8 +830,8 @@ team_access() {
     echo ""
     
     for i in $(seq 1 $TEAM_COUNT); do
-        TEAM_ID=$(printf "team%03d" $i)
-        SSH_PORT=$((20000 + i))
+        TEAM_ID="team${i}"
+        SSH_PORT=$((2200 + i))
         
         # Check if team exists
         if ! docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then
@@ -845,16 +845,21 @@ team_access() {
             [ -z "$PASSWORD" ] && PASSWORD="IEC61850_CTF_2024"
         fi
         
-        echo -e "${GREEN}Team $(printf "%03d" $i):${NC}"
-        echo "  SSH Access:"
-        echo "    ssh ctfuser@$VM_IP -p $SSH_PORT"
-        echo "    Password: $PASSWORD"
+        echo -e "${GREEN}Team $i:${NC}"
+        echo -e "  ${CYAN}1. SSH Access:${NC}"
+        echo "     ssh ctfuser@$VM_IP -p $SSH_PORT"
+        echo "     Password: $PASSWORD"
         echo ""
-        echo "  Web Interfaces (via SSH tunnel):"
-        echo "    ssh -L 9001:${TEAM_ID}-breaker-v1:9000 -L 9002:${TEAM_ID}-breaker-v2:9000 ctfuser@$VM_IP -p $SSH_PORT"
-        echo "    Then access:"
-        echo "      Breaker v1: http://localhost:9001"
-        echo "      Breaker v2: http://localhost:9002"
+        echo -e "  ${CYAN}2. Port Forward Web UIs:${NC}"
+        echo "     ssh -L 9001:${TEAM_ID}-breaker-v1:9000 -L 9002:${TEAM_ID}-breaker-v2:9000 \\"
+        echo "         -L 8081:${TEAM_ID}-openplc:8080 -L 8080:${TEAM_ID}-scadabr:8080 \\"
+        echo "         ctfuser@$VM_IP -p $SSH_PORT"
+        echo ""
+        echo -e "  ${CYAN}3. Access Web Interfaces (after port forward):${NC}"
+        echo "     Breaker v1:  http://localhost:9001"
+        echo "     Breaker v2:  http://localhost:9002"
+        echo "     OpenPLC:     http://localhost:8081 (openplc/openplc)"
+        echo "     ScadaBR:     http://localhost:8080/ScadaBR (admin/admin)"
         echo ""
     done
     
