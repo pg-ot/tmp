@@ -64,8 +64,12 @@ for i in $(seq 1 $TEAM_COUNT); do
     
     echo "  Generating password for ${TEAM_ID}: ${PASSWORD}"
     
-    # Change password in container
-    docker exec ${TEAM_ID}-kali bash -c "echo 'ctfuser:${PASSWORD}' | chpasswd" 2>/dev/null
+    # Ensure ctfuser exists and change password
+    docker exec ${TEAM_ID}-kali bash -c "
+        useradd -m -s /bin/bash ctfuser 2>/dev/null || true
+        usermod -aG sudo ctfuser 2>/dev/null || true
+        echo 'ctfuser:${PASSWORD}' | chpasswd
+    " 2>/dev/null
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ ${TEAM_ID}: Password changed to ${PASSWORD}${NC}"
