@@ -18,17 +18,25 @@ while true; do
     # Container status
     TOTAL=$(docker ps -a --filter "name=team" -q | wc -l)
     RUNNING=$(docker ps --filter "name=team" -q | wc -l)
-    STOPPED=$((TOTAL - RUNNING))
     
-    # SCADA status
+    # IED containers (breaker, control, kali)
+    IED_TOTAL=$(docker ps -a --filter "name=team" -q | wc -l)
+    IED_TOTAL=$((IED_TOTAL - $(docker ps -a --filter "name=openplc" -q | wc -l) - $(docker ps -a --filter "name=scadabr" -q | wc -l)))
+    IED_RUNNING=$(docker ps --filter "name=team" -q | wc -l)
+    IED_RUNNING=$((IED_RUNNING - $(docker ps --filter "name=openplc" -q | wc -l) - $(docker ps --filter "name=scadabr" -q | wc -l)))
+    
+    # SCADA containers
     SCADA_TOTAL=$(docker ps -a --filter "name=openplc" -q | wc -l)
     SCADA_TOTAL=$((SCADA_TOTAL + $(docker ps -a --filter "name=scadabr" -q | wc -l)))
     SCADA_RUNNING=$(docker ps --filter "name=openplc" -q | wc -l)
     SCADA_RUNNING=$((SCADA_RUNNING + $(docker ps --filter "name=scadabr" -q | wc -l)))
     
+    STOPPED=$((TOTAL - RUNNING))
+    
     echo "📊 Container Status:"
-    echo "   Teams: $RUNNING / $TOTAL"
+    echo "   IED: $IED_RUNNING / $IED_TOTAL (Breakers + Control + Kali)"
     echo "   SCADA: $SCADA_RUNNING / $SCADA_TOTAL (OpenPLC + ScadaBR)"
+    echo "   Total: $RUNNING / $TOTAL"
     if [ $STOPPED -gt 0 ]; then
         echo "   ⚠️  Stopped: $STOPPED"
     fi
