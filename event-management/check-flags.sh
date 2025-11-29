@@ -15,7 +15,7 @@ else
 fi
 
 for team_num in $TEAMS; do
-    TEAM_ID=$(printf "team%03d" $team_num)
+    TEAM_ID=$(printf "team%d" $team_num)
     
     echo "Team $team_num:"
     

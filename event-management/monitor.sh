@@ -51,10 +51,17 @@ while true; do
     # Team status summary
     echo "👥 Team Status:"
     ACTIVE_TEAMS=0
-    for i in {1..5}; do
-        TEAM_ID=$(printf "team%03d" $i)
-        COUNT=$(docker ps --filter "name=$TEAM_ID" -q | wc -l)
-        TOTAL_TEAM=$(docker ps -a --filter "name=$TEAM_ID" -q | wc -l)
+    
+    # Get deployed teams dynamically
+    DEPLOYED_TEAMS=($(docker ps --filter "name=team" --format "{{.Names}}" | grep -o "team[0-9]\+" | sort -u | sed 's/team//'))
+    
+    if [ ${#DEPLOYED_TEAMS[@]} -eq 0 ]; then
+        echo "   No teams deployed"
+    else
+        for i in "${DEPLOYED_TEAMS[@]}"; do
+            TEAM_ID="team${i}"
+            COUNT=$(docker ps --filter "name=$TEAM_ID" -q | wc -l)
+            TOTAL_TEAM=$(docker ps -a --filter "name=$TEAM_ID" -q | wc -l)
         
         if [ $COUNT -eq $TOTAL_TEAM ] && [ $COUNT -gt 0 ]; then
             STATUS="✓"
@@ -64,15 +71,16 @@ while true; do
         else
             STATUS="⚠"
         fi
-        
-        echo "   $STATUS Team $i: $COUNT/$TOTAL_TEAM containers"
-    done
+            
+            echo "   $STATUS Team $i: $COUNT/$TOTAL_TEAM containers"
+        done
+    fi
     
     echo ""
     echo "🌐 Network Activity:"
     GOOSE_TOTAL=0
-    for i in {1..5}; do
-        TEAM_ID=$(printf "team%03d" $i)
+    for i in "${DEPLOYED_TEAMS[@]}"; do
+        TEAM_ID="team${i}"
         if docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then
             GOOSE=$(docker exec ${TEAM_ID}-kali timeout 2 tcpdump -i eth0 -c 10 ether proto 0x88b8 2>/dev/null | wc -l)
             GOOSE_TOTAL=$((GOOSE_TOTAL + GOOSE))

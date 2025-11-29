@@ -11,7 +11,7 @@ if [ -z "$1" ] || [ -z "$2" ]; then
     exit 1
 fi
 
-TEAM_ID=$(printf "team%03d" $1)
+TEAM_ID=$(printf "team%d" $1)
 VERSION=$2
 CONTAINER="${TEAM_ID}-breaker-${VERSION}"
 

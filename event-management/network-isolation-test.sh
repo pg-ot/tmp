@@ -16,8 +16,8 @@ else
     TARGET_TEAM=$2
 fi
 
-SOURCE_TEAM_ID=$(printf "team%03d" $SOURCE_TEAM)
-TARGET_TEAM_ID=$(printf "team%03d" $TARGET_TEAM)
+SOURCE_TEAM_ID=$(printf "team%d" $SOURCE_TEAM)
+TARGET_TEAM_ID=$(printf "team%d" $TARGET_TEAM)
 
 echo "=== Network Isolation Test ==="
 echo "Time: $(date)"

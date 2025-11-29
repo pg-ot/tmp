@@ -7,9 +7,9 @@ cd "$SCRIPT_DIR"
 if [ -z "$1" ]; then
     echo "Usage: $0 <container_name_or_team>"
     echo "Examples:"
-    echo "  $0 team001              # All team001 containers"
-    echo "  $0 team001-breaker-v1   # Specific container"
-    echo "  $0 team001-kali         # Kali container"
+    echo "  $0 team1              # All team1 containers"
+    echo "  $0 team1-breaker-v1   # Specific container"
+    echo "  $0 team1-kali         # Kali container"
     exit 1
 fi
 

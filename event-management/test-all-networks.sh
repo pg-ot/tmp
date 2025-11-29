@@ -16,7 +16,7 @@ echo ""
 
 for i in {1..5}; do
     TEAM=$(printf "%03d" $i)
-    TEAM_ID=$(printf "team%03d" $i)
+    TEAM_ID=$(printf "team%d" $i)
     
     # Check if team exists
     if ! docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then
@@ -42,7 +42,7 @@ ISOLATION_ISSUES=0
 
 for i in {1..5}; do
     SOURCE=$(printf "%03d" $i)
-    SOURCE_ID=$(printf "team%03d" $i)
+    SOURCE_ID=$(printf "team%d" $i)
     
     # Check if source team exists
     if ! docker ps --format "{{.Names}}" | grep -q "^${SOURCE_ID}-kali$"; then
@@ -55,7 +55,7 @@ for i in {1..5}; do
         fi
         
         TARGET=$(printf "%03d" $j)
-        TARGET_ID=$(printf "team%03d" $j)
+        TARGET_ID=$(printf "team%d" $j)
         
         # Check if target team exists
         if ! docker ps --format "{{.Names}}" | grep -q "^${TARGET_ID}-breaker-v1$"; then
@@ -83,7 +83,7 @@ echo ""
 
 for i in {1..5}; do
     TEAM=$(printf "%03d" $i)
-    TEAM_ID=$(printf "team%03d" $i)
+    TEAM_ID=$(printf "team%d" $i)
     
     # Check if team exists
     if ! docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then
@@ -108,7 +108,7 @@ echo ""
 
 for i in {1..5}; do
     TEAM=$(printf "%03d" $i)
-    TEAM_ID=$(printf "team%03d" $i)
+    TEAM_ID=$(printf "team%d" $i)
     
     # Check if team exists
     if ! docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then
@@ -136,7 +136,7 @@ echo ""
 
 for i in {1..5}; do
     TEAM=$(printf "%03d" $i)
-    TEAM_ID=$(printf "team%03d" $i)
+    TEAM_ID=$(printf "team%d" $i)
     
     # Check if team exists
     if ! docker ps --format "{{.Names}}" | grep -q "^${TEAM_ID}-kali$"; then

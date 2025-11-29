@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-TEAM_ID=$(printf "team%03d" $1)
+TEAM_ID=$(printf "team%d" $1)
 
 echo "=== Full Reset Team $1 ==="
 echo "Time: $(date)"

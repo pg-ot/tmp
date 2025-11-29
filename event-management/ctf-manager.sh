@@ -114,7 +114,7 @@ restart_containers() {
         else
             if select_component; then
                 echo ""
-                TEAM_ID=$(printf "team%03d" $TEAM)
+                TEAM_ID=$(printf "team%d" $TEAM)
                 
                 if [ "$COMPONENT" = "ALL" ]; then
                     echo -e "${YELLOW}Restarting all containers for Team $TEAM...${NC}"
@@ -156,7 +156,7 @@ view_logs() {
             return
         fi
         
-        TEAM_ID=$(printf "team%03d" $TEAM)
+        TEAM_ID=$(printf "team%d" $TEAM)
         
         if select_component; then
             echo ""
@@ -272,7 +272,7 @@ access_shell() {
     show_header
     
     if select_team; then
-        TEAM_ID=$(printf "team%03d" $TEAM)
+        TEAM_ID=$(printf "team%d" $TEAM)
         
         if select_component; then
             echo ""
