@@ -68,8 +68,10 @@ fi
 echo ""
 echo "5. Breaker-v1 GOOSE subscription:"
 BREAKER_V1_STATUS=$(docker exec $KALI curl -s http://$BREAKER_V1:9000/status 2>/dev/null)
-if echo "$BREAKER_V1_STATUS" | grep -q "Breaker Status"; then
-    echo "   ✓ Receiving GOOSE (Status: $(echo "$BREAKER_V1_STATUS" | grep -o 'OPEN\|CLOSED' | head -1))"
+if echo "$BREAKER_V1_STATUS" | grep -q '"pos"'; then
+    POS=$(echo "$BREAKER_V1_STATUS" | grep -o '"pos": [0-9]' | grep -o '[0-9]')
+    STATUS=$([ "$POS" = "2" ] && echo "CLOSED" || echo "OPEN")
+    echo "   ✓ Receiving GOOSE (Status: $STATUS, stNum: $(echo "$BREAKER_V1_STATUS" | grep -o '"stNum": [0-9]*' | grep -o '[0-9]*'))"
 else
     echo "   ✗ Not receiving GOOSE"
 fi
@@ -77,8 +79,10 @@ fi
 echo ""
 echo "6. Breaker-v2 GOOSE subscription:"
 BREAKER_V2_STATUS=$(docker exec $KALI curl -s http://$BREAKER_V2:9000/status 2>/dev/null)
-if echo "$BREAKER_V2_STATUS" | grep -q "Breaker Status"; then
-    echo "   ✓ Receiving GOOSE (Status: $(echo "$BREAKER_V2_STATUS" | grep -o 'OPEN\|CLOSED' | head -1))"
+if echo "$BREAKER_V2_STATUS" | grep -q '"pos"'; then
+    POS=$(echo "$BREAKER_V2_STATUS" | grep -o '"pos": [0-9]' | grep -o '[0-9]')
+    STATUS=$([ "$POS" = "2" ] && echo "CLOSED" || echo "OPEN")
+    echo "   ✓ Receiving GOOSE (Status: $STATUS, stNum: $(echo "$BREAKER_V2_STATUS" | grep -o '"stNum": [0-9]*' | grep -o '[0-9]*'))"
 else
     echo "   ✗ Not receiving GOOSE"
 fi
