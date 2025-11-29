@@ -69,7 +69,9 @@ select_component() {
     echo "  2) Breaker v2"
     echo "  3) Control IED"
     echo "  4) Kali Workstation"
-    echo "  5) All Components"
+    echo "  5) OpenPLC"
+    echo "  6) ScadaBR"
+    echo "  7) All Components"
     echo "  b) Back"
     echo ""
     read -p "Choice: " comp_choice
@@ -77,9 +79,11 @@ select_component() {
     case $comp_choice in
         1) COMPONENT="breaker-v1" ;;
         2) COMPONENT="breaker-v2" ;;
-        3) COMPONENT="control" ;;
+        3) COMPONENT="control-ied" ;;
         4) COMPONENT="kali" ;;
-        5) COMPONENT="ALL" ;;
+        5) COMPONENT="openplc" ;;
+        6) COMPONENT="scadabr" ;;
+        7) COMPONENT="ALL" ;;
         b|B) return 1 ;;
         *) echo -e "${RED}Invalid choice${NC}"; sleep 1; return 1 ;;
     esac
