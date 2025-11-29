@@ -41,10 +41,9 @@ BREAKER_V1="${TEAM_ID}-breaker-v1"
 BREAKER_V2="${TEAM_ID}-breaker-v2"
 CONTROL="${TEAM_ID}-control-ied"
 
-echo "Testing from Kali workstation..."
+echo "=== Mahashakti Network (IEC 61850 GOOSE) ==="
 echo ""
 
-# Test ping to breakers
 echo "1. Ping breaker-v1:"
 docker exec $KALI ping -c 2 $BREAKER_V1 2>/dev/null && echo "   ✓ $BREAKER_V1 reachable" || echo "   ✗ $BREAKER_V1 unreachable"
 
@@ -57,15 +56,7 @@ echo "3. Ping control IED:"
 docker exec $KALI ping -c 2 $CONTROL 2>/dev/null && echo "   ✓ $CONTROL reachable" || echo "   ✗ $CONTROL unreachable"
 
 echo ""
-echo "4. Ping OpenPLC:"
-docker exec $KALI ping -c 2 openplc 2>/dev/null && echo "   ✓ openplc reachable" || echo "   ✗ openplc unreachable"
-
-echo ""
-echo "5. Ping ScadaBR:"
-docker exec $KALI ping -c 2 ${TEAM_ID}-scadabr 2>/dev/null && echo "   ✓ ${TEAM_ID}-scadabr reachable" || echo "   ✗ ${TEAM_ID}-scadabr unreachable"
-
-echo ""
-echo "6. GOOSE publish (tcpdump on Kali):"
+echo "4. GOOSE publish (tcpdump):"
 GOOSE_COUNT=$(docker exec $KALI timeout 5 tcpdump -i eth0 -c 5 ether proto 0x88b8 2>/dev/null | wc -l)
 if [ $GOOSE_COUNT -gt 0 ]; then
     echo "   ✓ GOOSE packets detected ($GOOSE_COUNT packets)"
@@ -74,7 +65,7 @@ else
 fi
 
 echo ""
-echo "7. Breaker-v1 GOOSE subscription:"
+echo "5. Breaker-v1 GOOSE subscription:"
 BREAKER_V1_STATUS=$(docker exec $KALI curl -s http://$BREAKER_V1:9000/status 2>/dev/null)
 if echo "$BREAKER_V1_STATUS" | grep -q '"pos"'; then
     POS=$(echo "$BREAKER_V1_STATUS" | grep -o '"pos": [0-9]' | grep -o '[0-9]')
@@ -85,7 +76,7 @@ else
 fi
 
 echo ""
-echo "8. Breaker-v2 GOOSE subscription:"
+echo "6. Breaker-v2 GOOSE subscription:"
 BREAKER_V2_STATUS=$(docker exec $KALI curl -s http://$BREAKER_V2:9000/status 2>/dev/null)
 if echo "$BREAKER_V2_STATUS" | grep -q '"pos"'; then
     POS=$(echo "$BREAKER_V2_STATUS" | grep -o '"pos": [0-9]' | grep -o '[0-9]')
@@ -94,6 +85,17 @@ if echo "$BREAKER_V2_STATUS" | grep -q '"pos"'; then
 else
     echo "   ✗ Not receiving GOOSE"
 fi
+
+echo ""
+echo "=== Aushadi Raksha Network (SCADA/Modbus) ==="
+echo ""
+
+echo "7. Ping OpenPLC:"
+docker exec $KALI ping -c 2 openplc 2>/dev/null && echo "   ✓ openplc reachable" || echo "   ✗ openplc unreachable"
+
+echo ""
+echo "8. Ping ScadaBR:"
+docker exec $KALI ping -c 2 ${TEAM_ID}-scadabr 2>/dev/null && echo "   ✓ ${TEAM_ID}-scadabr reachable" || echo "   ✗ ${TEAM_ID}-scadabr unreachable"
 
 echo ""
 echo "9. Modbus test (OpenPLC:502):"
