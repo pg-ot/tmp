@@ -57,7 +57,7 @@ echo "3. Ping control IED:"
 docker exec $KALI ping -c 2 $CONTROL 2>/dev/null && echo "   ✓ Success" || echo "   ✗ Failed"
 
 echo ""
-echo "4. Check GOOSE traffic:"
+echo "4. GOOSE publish (tcpdump on Kali):"
 GOOSE_COUNT=$(docker exec $KALI timeout 5 tcpdump -i eth0 -c 5 ether proto 0x88b8 2>/dev/null | wc -l)
 if [ $GOOSE_COUNT -gt 0 ]; then
     echo "   ✓ GOOSE packets detected ($GOOSE_COUNT packets)"
@@ -66,8 +66,30 @@ else
 fi
 
 echo ""
-echo "5. HTTP access to breaker-v1:"
-docker exec $KALI curl -s -o /dev/null -w "%{http_code}" http://$BREAKER_V1:9000/ 2>/dev/null | grep -q "200" && echo "   ✓ Success" || echo "   ✗ Failed"
+echo "5. Breaker-v1 GOOSE subscription:"
+BREAKER_V1_STATUS=$(docker exec $KALI curl -s http://$BREAKER_V1:9000/status 2>/dev/null)
+if echo "$BREAKER_V1_STATUS" | grep -q "Breaker Status"; then
+    echo "   ✓ Receiving GOOSE (Status: $(echo "$BREAKER_V1_STATUS" | grep -o 'OPEN\|CLOSED' | head -1))"
+else
+    echo "   ✗ Not receiving GOOSE"
+fi
+
+echo ""
+echo "6. Breaker-v2 GOOSE subscription:"
+BREAKER_V2_STATUS=$(docker exec $KALI curl -s http://$BREAKER_V2:9000/status 2>/dev/null)
+if echo "$BREAKER_V2_STATUS" | grep -q "Breaker Status"; then
+    echo "   ✓ Receiving GOOSE (Status: $(echo "$BREAKER_V2_STATUS" | grep -o 'OPEN\|CLOSED' | head -1))"
+else
+    echo "   ✗ Not receiving GOOSE"
+fi
+
+echo ""
+echo "7. Modbus TCP to OpenPLC:"
+docker exec $KALI timeout 3 bash -c "cat < /dev/null > /dev/tcp/openplc/502" 2>/dev/null && echo "   ✓ Success" || echo "   ✗ Failed"
+
+echo ""
+echo "8. ScadaBR web access:"
+docker exec $KALI curl -s -o /dev/null -w "%{http_code}" http://${TEAM_ID}-scadabr:8080/ 2>/dev/null | grep -q "200" && echo "   ✓ Success" || echo "   ✗ Failed"
 
 echo ""
 echo "✓ Network check complete"
