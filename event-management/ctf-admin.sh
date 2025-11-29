@@ -20,7 +20,7 @@ COMPOSE_FILE="deployment/docker-compose-ctf-final.yml"
 show_header() {
     clear
     echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║         IEC 61850 GOOSE CTF - Admin Console                   ║${NC}"
+    echo -e "${CYAN}║         OT CTF - Admin Console                   ║${NC}"
     echo -e "${CYAN}║         $(date '+%Y-%m-%d %H:%M:%S')                                    ║${NC}"
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""

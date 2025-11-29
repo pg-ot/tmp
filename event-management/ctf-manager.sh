@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 show_header() {
     clear
     echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║         IEC 61850 GOOSE CTF - Management Console              ║${NC}"
+    echo -e "${CYAN}║         OT CTF - Management Console              ║${NC}"
     echo -e "${CYAN}║         $(date '+%Y-%m-%d %H:%M:%S')                                    ║${NC}"
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""

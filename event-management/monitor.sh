@@ -10,7 +10,7 @@ trap 'echo ""; echo "Exiting monitor..."; exit 0' INT
 while true; do
     clear
     echo "╔════════════════════════════════════════════════════════════════╗"
-    echo "║         IEC 61850 GOOSE CTF - Live Monitor                    ║"
+    echo "║         OT CTF - Live Monitor                    ║"
     echo "║         $(date '+%Y-%m-%d %H:%M:%S')                                    ║"
     echo "╚════════════════════════════════════════════════════════════════╝"
     echo ""
